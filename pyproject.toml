@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "voicebridge"
+version = "0.1.0"
+description = "Lokale Sprachbrücke: Mikrofon → STT/TTS → OpenCode, mit macOS-Cockpit"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.9"
+authors = [{ name = "Benjamin Damm" }]
+keywords = [
+  "voice",
+  "speech-to-text",
+  "text-to-speech",
+  "opencode",
+  "macos",
+  "barge-in",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: MacOS X :: Cocoa",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: MacOS",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Topic :: Multimedia :: Sound/Audio :: Speech",
+]
+dependencies = [
+  "requests>=2.32",
+  "sounddevice>=0.5",
+  "webrtcvad>=2.0.10",
+  "numpy>=2.0",
+]
+
+[project.optional-dependencies]
+macos = [
+  "rumps>=0.4",
+  "pyobjc-core==10.3.2",
+  "pyobjc-framework-Cocoa==10.3.2",
+  "pyobjc-framework-WebKit==10.3.2",
+]
+dev = ["coverage>=7.4"]
+
+[project.scripts]
+voicebridge = "voicebridge.__main__:main"
+
+[tool.setuptools]
+packages = ["voicebridge"]
+
+[tool.setuptools.package-data]
+voicebridge = ["assets/*.html"]

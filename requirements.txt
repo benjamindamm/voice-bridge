@@ -1,0 +1,3 @@
+# Komfort für bestehende venvs. Quelle der Wahrheit ist pyproject.toml.
+# Installiert das Projekt editierbar inklusive der macOS-Oberfläche.
+-e .[macos]

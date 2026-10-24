@@ -75,6 +75,35 @@ Jede Wiedergabe schreibt eine Diagnosezeile ins Log:
 Barge-in: Boden 600 · Gain 0.04 · Spitze 1118 · Schwelle max 600 · 1900 ms
 ```
 
+## Subagenten
+
+Der Orchestrator darf `coder`, `scout` und `voice-reviewer` starten. VoiceBridge
+verfolgt **nur Subagenten der eigenen Voice-Sitzung**; fremde Sitzungen werden
+über die `sessionID` gefiltert.
+
+Der Narrator liest dafür die SSE-Events:
+
+| Event | Inhalt | Reaktion |
+| --- | --- | --- |
+| `session.tool.input.started` | `id`, `name` | Tool-Zuordnung |
+| `session.tool.called` | `input.agent`, `input.description` | Helfer läuft, Ansage mit Namen |
+| `session.tool.success` | `id` | Helfer fertig |
+| `session.tool.error` / `failed` | `id` | Helfer fehlgeschlagen |
+| `session.execution.failed` / `interrupted` | – | alle laufenden Helfer auf fehlgeschlagen |
+
+Das Cockpit zeigt die drei Helfer als Chips (grau = bereit, orange = läuft,
+grün = fertig, rot = Fehler). Zusätzlich erscheinen Zeilen im Transkript:
+
+```
+→ scout: README zweiter Satz
+✓ scout fertig
+```
+
+Der Orchestrator arbeitet trotzdem oft selbst über das `execute`-Tool, statt zu
+delegieren. Dann bleibt die Helfer-Leiste leer – das ist kein Fehler der
+Anzeige, sondern eine Entscheidung des Modells. Ein klares „Nimm den Scout"
+im Sprachbefehl hilft.
+
 ## Threads und Sperren
 
 | Thread | Aufgabe |

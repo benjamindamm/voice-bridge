@@ -142,6 +142,13 @@ class MenubarApp(rumps.App):
         self._ui_sessions: List[Dict[str, str]] = []
         self._ui_models: List[Dict[str, str]] = []
         self._ui_mcps: List[Dict[str, str]] = []
+        self._ui_subagents: List[Dict[str, str]] = [
+            {"name": "scout", "status": "idle", "description": ""},
+            {"name": "coder", "status": "idle", "description": ""},
+            {"name": "voice-reviewer", "status": "idle", "description": ""},
+        ]
+        self._pending_subagents = None
+        self._subagent_lock = threading.Lock()
         self._last_state_json = ""
         self._sent_transcript = -1
 
@@ -196,10 +203,12 @@ class MenubarApp(rumps.App):
             on_event=self._on_event,
             on_state=self._on_state,
             on_transcript=self._on_transcript,
+            on_subagent=self._on_subagent,
             resume=resume,
             session_id=session_id,
             model=self._settings.model or None,
         )
+        self._reset_subagents()
 
     def _on_state(self, state_now: State) -> None:
         with self._lock:
@@ -213,6 +222,37 @@ class MenubarApp(rumps.App):
     def _on_transcript(self, role: str, text: str) -> None:
         with self._transcript_lock:
             self._transcript_lines.append((time.time(), role, text))
+
+    def _on_subagent(self, info: Dict[str, Any]) -> None:
+        """Hält die Helfer-Leiste aktuell (aufgerufen aus dem Loop-Thread)."""
+        agent = str(info.get("agent") or "")
+        state_now = str(info.get("state") or "")
+        description = str(info.get("description") or "")
+        with self._subagent_lock:
+            if agent == "*" or state_now == "reset":
+                for row in self._ui_subagents:
+                    row["status"] = "idle"
+                    row["description"] = ""
+            else:
+                row = next(
+                    (item for item in self._ui_subagents if item["name"] == agent),
+                    None,
+                )
+                if row is None:
+                    self._ui_subagents.append(
+                        {
+                            "name": agent,
+                            "status": state_now,
+                            "description": description,
+                        }
+                    )
+                else:
+                    row["status"] = state_now
+                    row["description"] = description
+            self._pending_subagents = [dict(item) for item in self._ui_subagents]
+
+    def _reset_subagents(self) -> None:
+        self._on_subagent({"agent": "*", "state": "reset", "description": ""})
 
     # WebView
 
@@ -269,6 +309,9 @@ class MenubarApp(rumps.App):
         self._eval_js("setModels", self._ui_models)
         self._eval_js("setSessions", self._ui_sessions)
         self._eval_js("setMcps", self._ui_mcps)
+        with self._subagent_lock:
+            subagents = [dict(item) for item in self._ui_subagents]
+        self._eval_js("setSubagents", subagents)
         with self._transcript_lock:
             lines = list(self._transcript_lines)
         self._send_transcript(lines)
@@ -351,6 +394,12 @@ class MenubarApp(rumps.App):
             self._pending_mcps = None
             self._ui_mcps = pending_mcps
             self._eval_js("setMcps", self._ui_mcps)
+        pending_subagents = self._pending_subagents
+        if pending_subagents is not None:
+            self._pending_subagents = None
+            with self._subagent_lock:
+                self._ui_subagents = pending_subagents
+            self._eval_js("setSubagents", pending_subagents)
 
         if self._clear_requested:
             self._clear_requested = False

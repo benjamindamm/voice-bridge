@@ -12,7 +12,7 @@ import threading
 import time
 from enum import Enum
 from pathlib import Path
-from typing import Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from . import audio, events, sounds, speech, state, stt, tts
 from .config import Config
@@ -37,6 +37,7 @@ class VoiceLoop:
         on_event: Optional[Callable[[str], None]] = None,
         on_state: Optional[Callable[[State], None]] = None,
         on_transcript: Optional[Callable[[str, str], None]] = None,
+        on_subagent: Optional[Callable[[Dict[str, Any]], None]] = None,
         session_id: Optional[str] = None,
         model: Optional[str] = None,
         resume: bool = True,
@@ -47,6 +48,7 @@ class VoiceLoop:
         self._on_event = on_event or (lambda message: None)
         self._on_state = on_state or (lambda state: None)
         self._on_transcript = on_transcript or (lambda role, text: None)
+        self._on_subagent = on_subagent or (lambda info: None)
         self._transcript: List[Tuple[float, str, str]] = []
         self._transcript_lock = threading.Lock()
         self._stop = threading.Event()
@@ -167,6 +169,7 @@ class VoiceLoop:
         if self._thread is not None:
             self._thread.join(timeout=10)
         self._lock.release()
+        self._reset_subagents()
         self._set_state(State.OFF)
 
     def cancel(self) -> None:
@@ -201,6 +204,7 @@ class VoiceLoop:
                 client.interrupt(self._session_id)
             except Exception:  # noqa: BLE001 – Abbruch bleibt bestehen
                 pass
+        self._reset_subagents()
 
     def send(self) -> None:
         """Beendet die laufende Aufnahme sofort und schickt sie ab."""
@@ -254,6 +258,36 @@ class VoiceLoop:
         try:
             self._on_transcript(role, text)
         except Exception:  # noqa: BLE001 – Anzeige ist optional
+            pass
+
+    def _subagent_event(self, info: Dict[str, Any]) -> None:
+        """Spiegelt einen Subagenten-Status ins Transkript und an die UI."""
+        agent = str(info.get("agent") or "Helfer")
+        state_now = str(info.get("state") or "")
+        description = str(info.get("description") or "").strip()
+        if state_now == "running":
+            text = (
+                "→ {}: {}".format(agent, description)
+                if description
+                else "→ {}".format(agent)
+            )
+        elif state_now == "done":
+            text = "✓ {} fertig".format(agent)
+        elif state_now == "failed":
+            text = "✗ {} fehlgeschlagen".format(agent)
+        else:
+            return
+        self._record("info", text)
+        self._emit("Subagent: {}".format(text))
+        try:
+            self._on_subagent(info)
+        except Exception:  # noqa: BLE001
+            pass
+
+    def _reset_subagents(self) -> None:
+        try:
+            self._on_subagent({"agent": "*", "state": "reset", "description": ""})
+        except Exception:  # noqa: BLE001
             pass
 
     def _narrate(self, text: str, stop_event: threading.Event) -> None:
@@ -439,6 +473,7 @@ class VoiceLoop:
 
                 self._record("user", text)
                 self._set_state(State.THINKING)
+                self._reset_subagents()
                 started = time.monotonic()
                 narrator: Optional[events.Narrator] = None
                 if cfg.progress and self._speak_enabled:
@@ -449,6 +484,7 @@ class VoiceLoop:
                         self._narrate,
                         signal_start=self._start_thinking,
                         signal_stop=self._stop_thinking,
+                        on_subagent=self._subagent_event,
                     )
                     self._narrator = narrator
                     narrator.start()
@@ -503,6 +539,7 @@ class VoiceLoop:
             self._set_state(State.ERROR)
         finally:
             self._stop_thinking()
+            self._reset_subagents()
             self._lock.release()
             if self._state not in (State.OFF, State.ERROR):
                 self._set_state(State.OFF)

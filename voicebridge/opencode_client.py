@@ -234,6 +234,10 @@ class OpenCodeClient:
         for item in data:
             if not isinstance(item, dict):
                 continue
+            # Subagenten laufen in eigenen Kind-Sitzungen (parentID). Die gehören
+            # nicht in die Auswahl; verfolgt werden sie über die Helfer-Leiste.
+            if item.get("parentID"):
+                continue
             if directory is not None:
                 location = item.get("location") or {}
                 if str(location.get("directory") or "") != directory:

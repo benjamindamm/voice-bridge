@@ -175,6 +175,11 @@
   .dot.failed, .dot.error { background: var(--red); }
   .dot.disabled { background: var(--muted); }
   .dot.unknown { background: var(--orange); }
+  .dot.running { background: var(--orange); box-shadow: 0 0 7px rgba(255, 180, 92, .7); animation: breathe 1.2s infinite; }
+  .dot.done { background: var(--green); }
+  .dot.failed { background: var(--red); }
+  .helpers .chip { cursor: default; }
+  .helpers .chip:hover { border-color: var(--line); background: var(--card); }
 
   .dock {
     display: flex; flex-direction: column; gap: 8px;
@@ -250,6 +255,14 @@
       <button id="refresh" class="ghost small" title="Dienste, Sitzungen und Modelle aktualisieren">↻</button>
     </div>
     <div class="chips" id="mcps"></div>
+  </section>
+
+  <section class="services">
+    <div class="services-head">
+      <span>Helfer</span>
+      <span class="hint">nur diese Sitzung</span>
+    </div>
+    <div class="chips" id="helpers"></div>
   </section>
 
   <footer class="dock">
@@ -409,8 +422,36 @@
     return "unknown";
   }
 
-  function setMcps(rows) {
-    mcps = rows || [];
+  const HELPER_LABELS = { scout: "Scout", coder: "Coder", "voice-reviewer": "Reviewer" };
+
+  function helperClass(status) {
+    const text = String(status || "").toLowerCase();
+    if (text === "running") return "running";
+    if (text === "done") return "done";
+    if (text === "failed") return "failed";
+    return "disabled";
+  }
+
+  function setSubagents(rows) {
+    const wrap = $("helpers");
+    wrap.innerHTML = "";
+    for (const row of rows || []) {
+      const chip = document.createElement("span");
+      chip.className = "chip";
+      chip.title =
+        (row.name || "") + ": " + (row.status || "idle") +
+        (row.description ? " – " + row.description : "");
+      const dot = document.createElement("span");
+      dot.className = "dot " + helperClass(row.status);
+      const label = document.createElement("span");
+      label.textContent = HELPER_LABELS[row.name] || row.name;
+      chip.appendChild(dot);
+      chip.appendChild(label);
+      wrap.appendChild(chip);
+    }
+  }
+
+  function setMcps(rows) {    mcps = rows || [];
     const wrap = $("mcps");
     wrap.innerHTML = "";
     $("serviceCount").textContent = mcps.length ? String(mcps.length) : "";
@@ -480,6 +521,7 @@
     setModels,
     setSessions,
     setMcps,
+    setSubagents,
     setTranscript,
   };
 

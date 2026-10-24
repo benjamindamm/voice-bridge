@@ -336,6 +336,13 @@ class SessionListTests(unittest.TestCase):
                                 "location": {"directory": "/w"},
                                 "time": {"updated": 200},
                             },
+                            {
+                                "id": "child",
+                                "title": "Scout",
+                                "parentID": "a",
+                                "location": {"directory": "/w"},
+                                "time": {"updated": 400},
+                            },
                         ]
                     },
                 )

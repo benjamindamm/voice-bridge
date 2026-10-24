@@ -86,6 +86,13 @@ Barge-in: Boden 600 · Gain 0.04 · Spitze 1118 · Schwelle max 600 · 1900 ms
 die höchste angewendete Schwelle. Liegt `Spitze` unter `Schwelle`, war die
 Sprache zu leise für die aktuelle Einstellung.
 
+## Helfer-Leiste bleibt leer
+
+Die Leiste zeigt nur Subagenten, die der Orchestrator **in dieser Voice-Sitzung**
+startet. Arbeitet er stattdessen selbst über `execute` (Code-Mode), bleibt sie
+leer. Sage dann zum Beispiel „Nimm den Scout" oder „Lass das den Coder machen".
+Die Agenten-Prompts unter `agents/` definieren, wann delegiert werden soll.
+
 ## Verlauf im Cockpit
 
 Beim Auswählen einer Sitzung werden die letzten 20 Züge geladen (Nutzerfrage +

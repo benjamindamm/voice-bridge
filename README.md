@@ -19,6 +19,9 @@ Antwort vor – mit Barge-in, einem macOS-Cockpit und sichtbaren MCP-Diensten.
   Sitzungswahl, Pegel und Latenzen
 - **MCP-Dienste sichtbar:** Status aller Server, per Klick ein-/ausschaltbar,
   damit sie den Kontext nicht fluten
+- **Helfer-Leiste:** zeigt `scout`, `coder` und `voice-reviewer`, sobald der
+  Orchestrator sie in dieser Sitzung startet – mit Status (läuft/fertig/fehler)
+  und Ansage „Ich gebe das an den Scout."
 - **Sitzungsgedächtnis:** letzte Sitzung fortsetzen oder eine alte wählen –
   inklusive der letzten 20 Züge im Chat
 - **macOS-App:** Menüleisten-Launcher mit Mikrofon-Freigabe, baubar als

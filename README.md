@@ -55,7 +55,7 @@ Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 ## Schnellstart
 
 ```sh
-git clone git@github.com:benjamindamm/voice-bridge.git
+git clone https://github.com/benjamindamm/voice-bridge.git
 cd voice-bridge
 
 python3 -m venv .venv

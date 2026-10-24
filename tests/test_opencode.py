@@ -5,6 +5,7 @@ from __future__ import annotations
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from voicebridge.config import Config
 from voicebridge.opencode_client import Endpoint, OpenCodeClient, OpenCodeError
@@ -462,7 +463,10 @@ class ModelTests(unittest.TestCase):
                 ),
             }
             client, _http, _cfg = build(tmp, routes)
-            rows = client.list_models()
+            with mock.patch.object(
+                OpenCodeClient, "_auth_providers", return_value=set()
+            ):
+                rows = client.list_models()
 
         self.assertEqual(
             [row["value"] for row in rows],
@@ -498,9 +502,113 @@ class ModelTests(unittest.TestCase):
                 ),
             }
             client, _http, _cfg = build(tmp, routes)
-            rows = client.list_models()
+            with mock.patch.object(
+                OpenCodeClient, "_auth_providers", return_value=set()
+            ):
+                rows = client.list_models()
 
         self.assertEqual([row["value"] for row in rows], ["opencode/beam-free"])
+
+    def test_auto_provider_mit_auth_wird_angezeigt(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            routes = {
+                ("GET", BASE + "/api/provider"): FakeResponse(
+                    200,
+                    {
+                        "data": [
+                            {
+                                "id": "ollama-cloud",
+                                "name": "Ollama Cloud",
+                                "activation": "auto",
+                                "integrationID": "ollama-cloud",
+                            }
+                        ]
+                    },
+                ),
+                ("GET", BASE + "/api/model"): FakeResponse(
+                    200,
+                    {
+                        "data": [
+                            {
+                                "providerID": "ollama-cloud",
+                                "modelID": "deepseek-v4.1-flash",
+                                "name": "DeepSeek V4.1 Flash",
+                                "enabled": True,
+                                "capabilities": {"tools": True},
+                                "cost": [],
+                            }
+                        ]
+                    },
+                ),
+            }
+            client, _http, _cfg = build(tmp, routes)
+            with mock.patch.object(
+                OpenCodeClient, "_auth_providers", return_value={"ollama-cloud"}
+            ):
+                rows = client.list_models()
+
+        self.assertEqual(
+            [row["value"] for row in rows],
+            ["ollama-cloud/deepseek-v4.1-flash"],
+        )
+
+    def test_allowlist_beschraenkt_provider(self) -> None:
+        routes = {
+            ("GET", BASE + "/api/provider"): FakeResponse(
+                200,
+                {
+                    "data": [
+                        {"id": "treno", "name": "Treno", "activation": "enabled"},
+                        {
+                            "id": "ollama-cloud",
+                            "name": "Ollama Cloud",
+                            "activation": "auto",
+                            "integrationID": "ollama-cloud",
+                        },
+                    ]
+                },
+            ),
+            ("GET", BASE + "/api/model"): FakeResponse(
+                200,
+                {
+                    "data": [
+                        {
+                            "providerID": "treno",
+                            "modelID": "local:default",
+                            "name": "Local",
+                            "enabled": True,
+                            "capabilities": {"tools": True},
+                            "cost": [],
+                        },
+                        {
+                            "providerID": "ollama-cloud",
+                            "modelID": "deepseek-v4.1-flash",
+                            "name": "DeepSeek V4.1 Flash",
+                            "enabled": True,
+                            "capabilities": {"tools": True},
+                            "cost": [],
+                        },
+                    ]
+                },
+            ),
+        }
+
+        def fetch(extra: str):
+            with tempfile.TemporaryDirectory() as tmp:
+                client, _http, _cfg = build(tmp, routes, extra)
+                with mock.patch.object(
+                    OpenCodeClient, "_auth_providers", return_value={"ollama-cloud"}
+                ):
+                    return [row["value"] for row in client.list_models()]
+
+        self.assertEqual(
+            fetch("VOICE_MODEL_PROVIDERS=treno\n"),
+            ["treno/local:default"],
+        )
+        self.assertEqual(
+            fetch("VOICE_MODEL_PROVIDERS=treno,ollama-cloud\n"),
+            ["ollama-cloud/deepseek-v4.1-flash", "treno/local:default"],
+        )
 
 
 class McpTests(unittest.TestCase):

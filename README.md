@@ -134,6 +134,8 @@ kollidieren. Umgebungsvariablen haben Vorrang vor `.env`;
 | `VOICE_PLAYER` | `afplay` oder `portaudio` |
 | `VOICE_SESSION_DIR` | Arbeitsordner der Sitzung (Standard `~/voice-workspace`) |
 | `VOICE_AGENT` | primärer Agent (Standard `voice-orchestrator`) |
+| `VOICE_MODEL` | Modell für neue Sitzungen (`provider/model`; leer = global) |
+| `VOICE_MODEL_PROVIDERS` | nur diese Provider in der Auswahl (Komma; leer = alle verbundenen) |
 | `VOICE_OPENCODE_URL`, `VOICE_OPENCODE_PASSWORD` | eigener OpenCode-Server; leer = automatisch |
 | `VOICE_BARGE_*`, `VOICE_AMBIENT_MS`, `VOICE_RECORD_MIN_RMS` | Barge-in-Feintuning |
 | `VOICE_VAD_*`, `VOICE_SILENCE_MS`, `VOICE_MIN_SPEECH_MS` | Aufnahme-Feintuning |
@@ -142,9 +144,11 @@ Die vollständige Liste mit Kommentaren steht in
 [.env.example](.env.example).
 
 Die Modellauswahl zeigt Modelle von Providern aus der OpenCode-Config
-(`~/.config/opencode/opencode.json` unter `providers`) sowie von verbundenen
-Integrationen (z. B. `opencode` Zen). Die Einträge sind nach Provider gruppiert;
-kostenlose Modelle sind markiert.
+(`~/.config/opencode/opencode.json` unter `providers`), aus verbundenen
+Integrationen (z. B. `opencode` Zen) und aus OpenCodes `auth.json`. Die Einträge
+sind nach Provider gruppiert; kostenlose Modelle sind markiert.
+`VOICE_MODEL_PROVIDERS` begrenzt die Auswahl auf bestimmte Provider – nützlich,
+wenn ein Provider hunderte Modelle mitbringt.
 
 ## MCP und Dokumente
 

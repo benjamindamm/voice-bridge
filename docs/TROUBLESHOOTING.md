@@ -89,9 +89,10 @@ Sprache zu leise für die aktuelle Einstellung.
 ## Modell fehlt in der Auswahl
 
 Die Auswahl zeigt Provider aus `~/.config/opencode/opencode.json` unter
-`providers` sowie verbundene Integrationen (z. B. `opencode` Zen). Ein Provider,
-der nur über `opencode auth` eingerichtet wurde und weder in der Config noch als
-Integration auftaucht, erscheint nicht.
+`providers`, verbundene Integrationen (z. B. `opencode` Zen) und Provider aus
+OpenCodes `auth.json` (API-Key). Mit `VOICE_MODEL_PROVIDERS` lässt sich die
+Auswahl explizit begrenzen (z. B. `local-litellm,treno,opencode,ollama-cloud`).
+Ein Provider, der nirgends auftaucht, erscheint nicht.
 
 ## Helfer-Leiste bleibt leer
 

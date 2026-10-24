@@ -10,7 +10,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 PLACEHOLDER = "CHANGE_ME"
 
@@ -36,6 +36,7 @@ KEY_PROGRESS_INTERVAL_S = "VOICE_PROGRESS_INTERVAL_S"
 KEY_SESSION_DIR = "VOICE_SESSION_DIR"
 KEY_AGENT = "VOICE_AGENT"
 KEY_MODEL = "VOICE_MODEL"
+KEY_MODEL_PROVIDERS = "VOICE_MODEL_PROVIDERS"
 KEY_SAMPLE_RATE = "VOICE_SAMPLE_RATE"
 KEY_FRAME_MS = "VOICE_FRAME_MS"
 KEY_VAD_AGGRESSIVENESS = "VOICE_VAD_AGGRESSIVENESS"
@@ -132,6 +133,7 @@ class Config:
     session_dir: Path
     agent: str
     model: str
+    model_providers: Tuple[str, ...]
     env_path: Path
     sample_rate: int
     frame_ms: int
@@ -249,6 +251,11 @@ class Config:
 
         session_dir = Path(raw(KEY_SESSION_DIR) or DEFAULT_SESSION_DIR).expanduser().resolve()
         agent = optional(KEY_AGENT, "voice-orchestrator") or "voice-orchestrator"
+        model_providers = tuple(
+            part.strip()
+            for part in optional(KEY_MODEL_PROVIDERS, "").split(",")
+            if part.strip()
+        )
 
         cfg = cls(
             stt_url=text(KEY_STT_URL) or "",
@@ -273,6 +280,7 @@ class Config:
             session_dir=session_dir,
             agent=agent,
             model=optional(KEY_MODEL, ""),
+            model_providers=model_providers,
             env_path=path,
             sample_rate=number(KEY_SAMPLE_RATE, 16000, int, 8000, 48000),
             frame_ms=number(KEY_FRAME_MS, 20, int, 10, 30),

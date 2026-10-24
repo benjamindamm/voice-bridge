@@ -102,6 +102,7 @@ class LoadTests(unittest.TestCase):
         self.assertEqual(cfg.max_utterance_s, 25.0)
         self.assertEqual(cfg.agent, "voice-orchestrator")
         self.assertEqual(cfg.model, "")
+        self.assertEqual(cfg.model_providers, ())
         self.assertEqual(cfg.stt_model, "whisper-turbo")
         self.assertEqual(cfg.stt_language, "de")
         self.assertEqual(cfg.tts_model, "speaches-ai/piper-de_DE-thorsten-medium")
@@ -157,6 +158,16 @@ class LoadTests(unittest.TestCase):
 
         self.assertEqual(cfg.api_key, "test-key-1234")
         self.assertEqual(cfg.agent, "voice-orchestrator")
+
+    def test_modell_provider_liste(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self._write(
+                tmp,
+                BASIS + "VOICE_MODEL_PROVIDERS=treno, ollama-cloud ,\n",
+            )
+            cfg = Config.load(path)
+
+        self.assertEqual(cfg.model_providers, ("treno", "ollama-cloud"))
 
     def test_ungueltige_zahl_wird_gemeldet(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

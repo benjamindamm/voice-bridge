@@ -58,6 +58,11 @@ def _print_config(cfg: Config) -> None:
     print("  Agent               {}".format(cfg.agent))
     print("  Arbeitsordner       {}".format(cfg.session_dir))
     print("  Modell              {}".format(cfg.model or "(global)"))
+    print(
+        "  Modell-Provider     {}".format(
+            ", ".join(cfg.model_providers) or "(alle verbundenen)"
+        )
+    )
     print("  API-Key             {}".format(cfg.masked_api_key))
     print(
         "  Audio               {} Hz, Frame {} ms, VAD {}".format(

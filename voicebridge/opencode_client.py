@@ -273,8 +273,22 @@ class OpenCodeClient:
                 providers.update(str(key) for key in info["providers"])
         return providers
 
+    def _auth_providers(self) -> set:
+        """Provider-IDs aus OpenCodes Auth-Store (nur Schlüssel, keine Tokens)."""
+        for path in (
+            Path("~/.local/share/opencode/auth.json").expanduser(),
+            Path("~/.config/opencode/auth.json").expanduser(),
+        ):
+            try:
+                payload = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                continue
+            if isinstance(payload, dict):
+                return {str(key) for key in payload}
+        return set()
+
     def list_models(self) -> List[Dict[str, Any]]:
-        """Listet Modelle der konfigurierten bzw. verbundenen aktiven Provider."""
+        """Listet Modelle der verbundenen bzw. freigegebenen Provider."""
         providers_response = self._get("/api/provider", timeout=(5.0, 15.0))
         self._check(providers_response)
         provider_rows = {
@@ -288,9 +302,12 @@ class OpenCodeClient:
             if item.get("activation") == "enabled"
         }
         # OpenCode aktiviert eingebaute Provider (z. B. "opencode" Zen) von sich
-        # aus. Sichtbar bleiben Provider aus der eigenen Config und verbundene
-        # Integrationen; fremde, nur automatisch aktivierte Provider fallen raus.
+        # aus. Verbunden sind Provider aus der Config, Integrationen und
+        # Provider mit Eintrag in auth.json. Eine Allowlist schränkt die
+        # Auswahl zusätzlich ein (z. B. gegen hunderte OpenRouter-Modelle).
         configured = self._config_providers()
+        authenticated = self._auth_providers()
+        allowed = set(self._cfg.model_providers)
 
         models_response = self._get("/api/model", timeout=(5.0, 15.0))
         self._check(models_response)
@@ -300,13 +317,25 @@ class OpenCodeClient:
                 continue
             provider = str(item.get("providerID") or "")
             model_id = str(item.get("modelID") or item.get("id") or "")
-            if provider not in enabled or not model_id:
+            if not model_id:
                 continue
             provider_info = provider_rows.get(provider) or {}
-            if (
+            connected = (
+                provider in enabled
+                or provider in authenticated
+                or provider in configured
+                or bool(provider_info.get("integrationID"))
+            )
+            if not connected:
+                continue
+            if allowed:
+                if provider not in allowed:
+                    continue
+            elif (
                 configured
                 and provider not in configured
                 and not provider_info.get("integrationID")
+                and provider not in authenticated
             ):
                 continue
             if not item.get("enabled", True):

@@ -487,10 +487,18 @@
     }
   }
 
-  function setTranscript(lines) {
+  const SCROLL_PIN_PX = 64;
+
+  function setTranscript(payload) {
+    const chat = $("chat");
     const box = $("messages");
+    const entries = (payload && payload.lines) || [];
+    const forceBottom = !!(payload && payload.forceBottom);
+    const previous = chat.scrollTop;
+    const distance = chat.scrollHeight - chat.scrollTop - chat.clientHeight;
+    const pinned = forceBottom || distance <= SCROLL_PIN_PX;
+
     box.innerHTML = "";
-    const entries = lines || [];
     for (const line of entries) {
       const item = document.createElement("div");
       item.className = "msg " + (line.role === "user" ? "user" : line.role === "info" ? "info" : "assistant");
@@ -509,8 +517,12 @@
       box.appendChild(item);
     }
     $("empty").classList.toggle("hidden", entries.length > 0);
-    const chat = $("chat");
-    chat.scrollTop = chat.scrollHeight;
+    // Nur ans Ende springen, wenn der Nutzer dort schon war (oder ein Wechsel
+    // erzwungen wurde). Beim Hochscrollen bleibt die Position erhalten.
+    const behavior = chat.style.scrollBehavior;
+    chat.style.scrollBehavior = "auto";
+    chat.scrollTop = pinned ? chat.scrollHeight : previous;
+    chat.style.scrollBehavior = behavior;
   }
 
   window.voice = {

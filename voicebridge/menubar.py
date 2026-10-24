@@ -289,15 +289,18 @@ class MenubarApp(rumps.App):
             self._last_state_json = encoded
             self._eval_js("update", payload)
 
-    def _send_transcript(self, lines) -> None:
-        payload = [
-            {
-                "time": time.strftime("%H:%M", time.localtime(stamp)),
-                "role": role,
-                "text": text,
-            }
-            for stamp, role, text in lines
-        ]
+    def _send_transcript(self, lines, force_bottom: bool = False) -> None:
+        payload = {
+            "lines": [
+                {
+                    "time": time.strftime("%H:%M", time.localtime(stamp)),
+                    "role": role,
+                    "text": text,
+                }
+                for stamp, role, text in lines
+            ],
+            "forceBottom": force_bottom,
+        }
         self._eval_js("setTranscript", payload)
 
     def _on_ready(self) -> None:
@@ -314,7 +317,7 @@ class MenubarApp(rumps.App):
         self._eval_js("setSubagents", subagents)
         with self._transcript_lock:
             lines = list(self._transcript_lines)
-        self._send_transcript(lines)
+        self._send_transcript(lines, force_bottom=True)
         self._sent_transcript = len(lines)
 
     def _on_js_message(self, data: Dict[str, Any]) -> None:
@@ -406,14 +409,14 @@ class MenubarApp(rumps.App):
             self._pending_transcript = None
             with self._transcript_lock:
                 self._transcript_lines = []
-            self._send_transcript([])
+            self._send_transcript([], force_bottom=True)
             self._sent_transcript = 0
 
         pending_transcript = self._pending_transcript
         if pending_transcript is not None:
             self._pending_transcript = None
             self._sent_transcript = len(pending_transcript)
-            self._send_transcript(pending_transcript)
+            self._send_transcript(pending_transcript, force_bottom=True)
 
         loop = self._loop
         current_session = loop.session_id if loop is not None else None

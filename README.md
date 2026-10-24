@@ -17,6 +17,8 @@ Antwort vor – mit Barge-in, einem macOS-Cockpit und sichtbaren MCP-Diensten.
   abzubrechen (Umgebungspegel, Echo-Schätzung, 400-ms-Nachweis)
 - **Cockpit:** WKWebView-UI mit Chat-Verlauf, Status-Orb, Modell- und
   Sitzungswahl, Pegel und Latenzen
+- **Retro-Look:** Synthwave-Grid, Scanlines und Neon-Akzente („Voice Link //
+  2086"), per ◐ umschaltbar auf den modernen Look
 - **MCP-Dienste sichtbar:** Status aller Server, per Klick ein-/ausschaltbar,
   damit sie den Kontext nicht fluten
 - **Helfer-Leiste:** zeigt `scout`, `coder` und `voice-reviewer`, sobald der
@@ -115,6 +117,8 @@ nach der Freigabe. Log: `~/Library/Logs/VoiceBridge.log`.
 
 **Cockpit:** Chat mit Sprechblasen, Modell- und Sitzungswahl, Dienste-Chips,
 Zuhören/Stoppen, Senden, Stopp, Mikrofon stumm, Stimme, Pegel und Latenz.
+Der Button **◐** oben rechts wechselt zwischen dem Retro-Look und dem modernen
+Look; die Wahl wird lokal gespeichert.
 Details: [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md).
 
 ## Konfiguration

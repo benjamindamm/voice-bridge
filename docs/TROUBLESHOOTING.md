@@ -86,6 +86,13 @@ Barge-in: Boden 600 · Gain 0.04 · Spitze 1118 · Schwelle max 600 · 1900 ms
 die höchste angewendete Schwelle. Liegt `Spitze` unter `Schwelle`, war die
 Sprache zu leise für die aktuelle Einstellung.
 
+## Cockpit-Theme
+
+Der Button **◐** oben rechts wechselt zwischen dem Retro-Look („Voice Link //
+2086": Neon-Grid, Scanlines, Cyan/Magenta) und dem modernen Look. Die Wahl wird
+lokal gespeichert. Bei aktivierter macOS-Einstellung „Bewegung reduzieren"
+steht das Grid still.
+
 ## Modell fehlt in der Auswahl
 
 Die Auswahl zeigt Provider aus `~/.config/opencode/opencode.json` unter

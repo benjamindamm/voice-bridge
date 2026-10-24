@@ -404,6 +404,15 @@
     box-shadow: 0 0 0 2px rgba(0, 229, 255, .12);
   }
 
+  body[data-theme="retro"] .theme-picker select {
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    font-family: var(--font-mono);
+    border-color: rgba(0, 229, 255, .28);
+    background-color: rgba(4, 8, 22, .8);
+  }
+
   body[data-theme="retro"] .primary {
     background: linear-gradient(135deg, #00c8ff 0%, #ff2fd0 100%);
     box-shadow: 0 0 26px rgba(0, 229, 255, .25), 0 0 40px rgba(255, 47, 208, .18);
@@ -487,7 +496,26 @@
     border-radius: 999px;
   }
 
-  .theme { width: 28px; height: 28px; flex: 0 0 auto; font-size: 14px; border-radius: 8px; }
+  .theme-picker { flex: 0 0 auto; display: flex; }
+  .theme-picker select {
+    appearance: none;
+    width: auto;
+    min-width: 78px;
+    font: inherit;
+    font-size: 10px;
+    color: var(--text);
+    background-color: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 6px 20px 6px 9px;
+    background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+                      linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+    background-position: calc(100% - 11px) 50%, calc(100% - 7px) 50%;
+    background-size: 4px 4px, 4px 4px;
+    background-repeat: no-repeat;
+    cursor: pointer;
+  }
+  .theme-picker select:hover { background-color: var(--card-strong); }
 
   @media (prefers-reduced-motion: reduce) {
     body[data-theme="retro"]::before { animation: none; }
@@ -503,7 +531,12 @@
       <div id="meta">Sitzung – · Modell Standard</div>
     </div>
     <div class="badge" id="modeBadge">Sprachmodus</div>
-    <button id="theme" class="ghost theme" title="Retro/Modern umschalten">◑</button>
+    <label class="theme-picker" title="Farbschema">
+      <select id="theme" aria-label="Farbschema">
+        <option value="retro">Retro</option>
+        <option value="modern">Modern</option>
+      </select>
+    </label>
   </header>
 
   <div class="toolbar">
@@ -591,19 +624,13 @@
   function applyTheme(theme) {
     const value = theme === "modern" ? "modern" : "retro";
     document.body.dataset.theme = value;
-    const button = $("theme");
-    if (button) {
-      button.textContent = value === "retro" ? "◑" : "◐";
-      button.title =
-        value === "retro"
-          ? "Zum modernen Look wechseln"
-          : "Zum Retro-Look wechseln";
-    }
+    const picker = $("theme");
+    if (picker && picker.value !== value) picker.value = value;
   }
 
   function savedTheme() {
     try {
-      return localStorage.getItem(THEME_KEY) || "retro";
+      return localStorage.getItem(THEME_KEY) === "modern" ? "modern" : "retro";
     } catch (error) {
       return "retro";
     }
@@ -863,14 +890,14 @@
   $("model").addEventListener("change", (event) => send("model", { value: event.target.value }));
   $("session").addEventListener("change", (event) => send("session", { id: event.target.value }));
 
-  $("theme").addEventListener("click", () => {
-    const next = document.body.dataset.theme === "retro" ? "modern" : "retro";
+  $("theme").addEventListener("change", (event) => {
+    const value = event.target.value === "modern" ? "modern" : "retro";
     try {
-      localStorage.setItem(THEME_KEY, next);
+      localStorage.setItem(THEME_KEY, value);
     } catch (error) {
       /* file:// ohne Storage: Theme gilt für diese Sitzung */
     }
-    applyTheme(next);
+    applyTheme(value);
   });
 
   window.addEventListener("error", (event) => {

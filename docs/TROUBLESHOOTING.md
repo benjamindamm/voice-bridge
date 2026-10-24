@@ -88,10 +88,11 @@ Sprache zu leise für die aktuelle Einstellung.
 
 ## Cockpit-Theme
 
-Das Dropdown **Retro/Modern** oben rechts wechselt zwischen dem Retro-Look
-(„Voice Link // 2086": Neon-Grid, Scanlines, Cyan/Magenta) und dem modernen
-Look. Die Wahl wird lokal gespeichert. Bei aktivierter macOS-Einstellung
-„Bewegung reduzieren" steht das Grid still.
+Das Dropdown **Retro/Modern/Amber** oben rechts wechselt zwischen dem
+Retro-Look („Voice Link // 2086": Neon-Grid, Scanlines, Cyan/Magenta), dem
+modernen Look und dem bernsteinfarbenen Amber-Terminal. Die Wahl wird lokal
+gespeichert. Bei aktivierter macOS-Einstellung „Bewegung reduzieren" steht das
+Grid still.
 
 ## Modell fehlt in der Auswahl
 

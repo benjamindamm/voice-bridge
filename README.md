@@ -18,7 +18,7 @@ Antwort vor – mit Barge-in, einem macOS-Cockpit und sichtbaren MCP-Diensten.
 - **Cockpit:** WKWebView-UI mit Chat-Verlauf, Status-Orb, Modell- und
   Sitzungswahl, Pegel und Latenzen
 - **Retro-Look:** Synthwave-Grid, Scanlines und Neon-Akzente („Voice Link //
-  2086"), per Dropdown umschaltbar auf den modernen Look
+  2086"), per Dropdown auf Modern oder Amber Terminal umschaltbar
 - **MCP-Dienste sichtbar:** Status aller Server, per Klick ein-/ausschaltbar,
   damit sie den Kontext nicht fluten
 - **Helfer-Leiste:** zeigt `scout`, `coder` und `voice-reviewer`, sobald der
@@ -117,8 +117,9 @@ nach der Freigabe. Log: `~/Library/Logs/VoiceBridge.log`.
 
 **Cockpit:** Chat mit Sprechblasen, Modell- und Sitzungswahl, Dienste-Chips,
 Zuhören/Stoppen, Senden, Stopp, Mikrofon stumm, Stimme, Pegel und Latenz.
-Das Dropdown **Retro/Modern** oben rechts wechselt zwischen dem Retro-Look und
-dem modernen Look; die Wahl wird lokal gespeichert.
+Das Dropdown **Retro/Modern/Amber** oben rechts wechselt zwischen dem
+Synthwave-Look, dem modernen Look und dem bernsteinfarbenen Amber-Terminal;
+die Wahl wird lokal gespeichert.
 Details: [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md).
 
 ## Konfiguration

@@ -496,6 +496,290 @@
     border-radius: 999px;
   }
 
+  /* ===== Amber-Terminal ===== */
+  body[data-theme="amber"] {
+    color-scheme: dark;
+    --bg: #0a0702;
+    --bg-2: #140d04;
+    --card: rgba(22, 15, 6, .72);
+    --card-strong: rgba(38, 26, 10, .9);
+    --text: #ffe7b0;
+    --muted: #b98a3e;
+    --line: rgba(255, 176, 0, .18);
+    --accent: #ffb000;
+    --accent-2: #ff7a00;
+    --green: #ffd166;
+    --orange: #ffb000;
+    --red: #ff5a3c;
+    --blue: #ffb000;
+    --shadow: 0 0 30px rgba(255, 176, 0, .07), 0 18px 60px rgba(0, 0, 0, .6);
+    --radius: 6px;
+    --font-mono: "SF Mono", ui-monospace, Menlo, "Courier New", monospace;
+    background:
+      radial-gradient(70% 40% at 50% 102%, rgba(255, 122, 0, .18), transparent 62%),
+      radial-gradient(120% 55% at 50% 100%, rgba(255, 176, 0, .2), transparent 68%),
+      linear-gradient(180deg, #070502 0%, #0d0803 48%, #1a0f04 100%);
+  }
+
+  body[data-theme="amber"]::before {
+    content: "";
+    position: fixed;
+    left: -20%;
+    right: -20%;
+    bottom: -6%;
+    height: 56vh;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+      radial-gradient(60% 40% at 50% 100%, rgba(255, 176, 0, .28), transparent 70%),
+      linear-gradient(rgba(255, 176, 0, .38) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 122, 0, .3) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 32px, 46px 100%;
+    background-position: center bottom, 0 0, 0 0;
+    transform: perspective(320px) rotateX(62deg) scale(1.15);
+    transform-origin: bottom center;
+    opacity: .7;
+    border-top: 1px solid rgba(255, 176, 0, .4);
+    box-shadow: 0 -8px 30px rgba(255, 176, 0, .12);
+    animation: grid-scroll 7s linear infinite;
+  }
+
+  @keyframes grid-scroll {
+    from { background-position: center bottom, 0 0, 0 0; }
+    to { background-position: center bottom, 0 32px, 0 0; }
+  }
+
+  body[data-theme="amber"]::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, .18) 0px,
+      rgba(0, 0, 0, .18) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    opacity: .28;
+    mix-blend-mode: soft-light;
+  }
+
+  body[data-theme="amber"] header,
+  body[data-theme="amber"] .toolbar,
+  body[data-theme="amber"] .chat,
+  body[data-theme="amber"] .services,
+  body[data-theme="amber"] .dock {
+    position: relative;
+    z-index: 2;
+  }
+
+  body[data-theme="amber"] .chat {
+    background: rgba(20, 14, 6, .66);
+    border-color: rgba(255, 176, 0, .22);
+    border-radius: 8px;
+    box-shadow: inset 0 0 24px rgba(255, 176, 0, .04), 0 0 24px rgba(255, 176, 0, .05);
+    backdrop-filter: blur(14px);
+  }
+
+  body[data-theme="amber"] .chat::before {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 1px solid rgba(255, 176, 0, .06);
+    border-radius: 6px;
+    pointer-events: none;
+  }
+
+  body[data-theme="amber"] .dock {
+    background: rgba(24, 16, 7, .82);
+    border-color: rgba(255, 176, 0, .22);
+    border-radius: 8px;
+    box-shadow: inset 0 0 24px rgba(255, 176, 0, .04), 0 0 24px rgba(255, 176, 0, .05);
+    backdrop-filter: blur(14px);
+  }
+
+  body[data-theme="amber"] #status {
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-size: 15px;
+    text-shadow: 0 0 14px rgba(255, 176, 0, .35);
+  }
+
+  body[data-theme="amber"] #meta,
+  body[data-theme="amber"] .field > span,
+  body[data-theme="amber"] .services-head > span,
+  body[data-theme="amber"] .badge,
+  body[data-theme="amber"] .chip,
+  body[data-theme="amber"] .secondary,
+  body[data-theme="amber"] .foot,
+  body[data-theme="amber"] .time,
+  body[data-theme="amber"] .hint {
+    font-family: var(--font-mono);
+    letter-spacing: .06em;
+  }
+
+  body[data-theme="amber"] .field > span,
+  body[data-theme="amber"] .services-head > span {
+    text-transform: uppercase;
+  }
+
+  body[data-theme="amber"] .badge {
+    text-transform: uppercase;
+    border-color: rgba(255, 176, 0, .35);
+    color: var(--accent);
+    background: rgba(255, 176, 0, .06);
+    box-shadow: 0 0 12px rgba(255, 176, 0, .12);
+  }
+
+  body[data-theme="amber"] .orb {
+    background:
+      radial-gradient(circle at 50% 50%, rgba(255, 176, 0, .28), transparent 58%),
+      rgba(14, 10, 4, .9);
+    border-color: rgba(255, 176, 0, .55);
+    box-shadow: 0 0 20px rgba(255, 176, 0, .22), inset 0 0 18px rgba(255, 176, 0, .1);
+  }
+
+  body[data-theme="amber"] .orb::after {
+    width: 11px;
+    height: 11px;
+  }
+
+  body[data-theme="amber"] .msg.user .bubble {
+    background: linear-gradient(135deg, rgba(255, 122, 0, .92), rgba(255, 140, 0, .92));
+    border: 1px solid rgba(255, 200, 120, .5);
+    box-shadow: 0 0 22px rgba(255, 122, 0, .22), inset 0 0 18px rgba(255, 255, 255, .06);
+    border-radius: 6px;
+    color: #1a0f02;
+  }
+
+  body[data-theme="amber"] .msg.assistant .bubble {
+    background: rgba(22, 15, 6, .82);
+    border: 1px solid rgba(255, 176, 0, .28);
+    border-left: 2px solid var(--accent);
+    box-shadow: 0 0 18px rgba(255, 176, 0, .06);
+    border-radius: 6px;
+  }
+
+  body[data-theme="amber"] .msg.info .bubble {
+    border: 1px dashed rgba(255, 176, 0, .3);
+    color: var(--muted);
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+
+  body[data-theme="amber"] .time { opacity: .45; }
+
+  body[data-theme="amber"] select {
+    background-color: rgba(14, 10, 4, .8);
+    border-color: rgba(255, 176, 0, .28);
+    color: var(--text);
+  }
+
+  body[data-theme="amber"] select:focus {
+    outline: none;
+    border-color: rgba(255, 176, 0, .7);
+    box-shadow: 0 0 0 2px rgba(255, 176, 0, .12);
+  }
+
+  body[data-theme="amber"] .theme-picker select {
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    font-family: var(--font-mono);
+    border-color: rgba(255, 176, 0, .28);
+    background-color: rgba(14, 10, 4, .8);
+  }
+
+  body[data-theme="amber"] .primary {
+    background: linear-gradient(135deg, #ffb000 0%, #ff7a00 100%);
+    box-shadow: 0 0 26px rgba(255, 176, 0, .25), 0 0 40px rgba(255, 122, 0, .18);
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+
+  body[data-theme="amber"] .primary.stop {
+    background: linear-gradient(135deg, #ff5a3c, #ff7a00);
+    box-shadow: 0 0 26px rgba(255, 90, 60, .3);
+  }
+
+  body[data-theme="amber"] .secondary {
+    border-color: rgba(255, 176, 0, .2);
+    background: rgba(14, 10, 4, .6);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    border-radius: 6px;
+  }
+
+  body[data-theme="amber"] .secondary:hover {
+    border-color: rgba(255, 176, 0, .5);
+    box-shadow: 0 0 14px rgba(255, 176, 0, .1);
+  }
+
+  body[data-theme="amber"] .chip {
+    border-color: rgba(255, 176, 0, .2);
+    background: rgba(14, 10, 4, .55);
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+
+  body[data-theme="amber"] .chip:hover {
+    border-color: rgba(255, 122, 0, .45);
+    box-shadow: 0 0 14px rgba(255, 122, 0, .1);
+  }
+
+  body[data-theme="amber"] .dot.connected { box-shadow: 0 0 8px var(--green); }
+  body[data-theme="amber"] .dot.unknown { box-shadow: 0 0 8px var(--orange); }
+
+  body[data-theme="amber"] .meter { background: rgba(255, 176, 0, .12); }
+
+  body[data-theme="amber"] #level {
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    box-shadow: 0 0 10px rgba(255, 176, 0, .4);
+  }
+
+  body[data-theme="amber"] .ghost {
+    border-color: rgba(255, 176, 0, .2);
+    background: rgba(14, 10, 4, .6);
+  }
+
+  body[data-theme="amber"] .ghost:hover {
+    border-color: rgba(255, 176, 0, .55);
+    box-shadow: 0 0 14px rgba(255, 176, 0, .12);
+  }
+
+  body[data-theme="amber"] .empty {
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-size: 10.5px;
+  }
+
+  body[data-theme="amber"] .empty-orb {
+    background: radial-gradient(circle, rgba(255, 176, 0, .25), transparent 60%), rgba(14, 10, 4, .9);
+    border-color: rgba(255, 176, 0, .5);
+    box-shadow: 0 0 26px rgba(255, 176, 0, .18);
+  }
+
+  body[data-theme="amber"] .chat::-webkit-scrollbar,
+  body[data-theme="amber"] .services::-webkit-scrollbar { width: 6px; }
+
+  body[data-theme="amber"] .chat::-webkit-scrollbar-thumb,
+  body[data-theme="amber"] .services::-webkit-scrollbar-thumb {
+    background: rgba(255, 176, 0, .35);
+    border-radius: 999px;
+  }
+
+
+  body[data-theme="amber"] .primary { color: #1a0f02; }
+
   .theme-picker { flex: 0 0 auto; display: flex; }
   .theme-picker select {
     appearance: none;
@@ -518,8 +802,10 @@
   .theme-picker select:hover { background-color: var(--card-strong); }
 
   @media (prefers-reduced-motion: reduce) {
-    body[data-theme="retro"]::before { animation: none; }
-    body[data-theme="retro"] .orb { animation: none !important; }
+    body[data-theme="retro"]::before,
+    body[data-theme="amber"]::before { animation: none; }
+    body[data-theme="retro"] .orb,
+    body[data-theme="amber"] .orb { animation: none !important; }
   }
 </style>
 </head>
@@ -535,6 +821,7 @@
       <select id="theme" aria-label="Farbschema">
         <option value="retro">Retro</option>
         <option value="modern">Modern</option>
+        <option value="amber">Amber</option>
       </select>
     </label>
   </header>
@@ -620,9 +907,10 @@
   };
 
   const THEME_KEY = "voicebridge-theme";
+  const THEMES = ["retro", "modern", "amber"];
 
   function applyTheme(theme) {
-    const value = theme === "modern" ? "modern" : "retro";
+    const value = THEMES.includes(theme) ? theme : "retro";
     document.body.dataset.theme = value;
     const picker = $("theme");
     if (picker && picker.value !== value) picker.value = value;
@@ -630,7 +918,8 @@
 
   function savedTheme() {
     try {
-      return localStorage.getItem(THEME_KEY) === "modern" ? "modern" : "retro";
+      const stored = localStorage.getItem(THEME_KEY);
+      return THEMES.includes(stored) ? stored : "retro";
     } catch (error) {
       return "retro";
     }
@@ -891,7 +1180,7 @@
   $("session").addEventListener("change", (event) => send("session", { id: event.target.value }));
 
   $("theme").addEventListener("change", (event) => {
-    const value = event.target.value === "modern" ? "modern" : "retro";
+    const value = THEMES.includes(event.target.value) ? event.target.value : "retro";
     try {
       localStorage.setItem(THEME_KEY, value);
     } catch (error) {

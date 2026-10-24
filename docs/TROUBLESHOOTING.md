@@ -86,6 +86,13 @@ Barge-in: Boden 600 · Gain 0.04 · Spitze 1118 · Schwelle max 600 · 1900 ms
 die höchste angewendete Schwelle. Liegt `Spitze` unter `Schwelle`, war die
 Sprache zu leise für die aktuelle Einstellung.
 
+## Modell fehlt in der Auswahl
+
+Die Auswahl zeigt Provider aus `~/.config/opencode/opencode.json` unter
+`providers` sowie verbundene Integrationen (z. B. `opencode` Zen). Ein Provider,
+der nur über `opencode auth` eingerichtet wurde und weder in der Config noch als
+Integration auftaucht, erscheint nicht.
+
 ## Helfer-Leiste bleibt leer
 
 Die Leiste zeigt nur Subagenten, die der Orchestrator **in dieser Voice-Sitzung**

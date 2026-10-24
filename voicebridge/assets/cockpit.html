@@ -375,11 +375,24 @@
     standard.value = "";
     standard.textContent = "Standard";
     select.appendChild(standard);
+
+    const groups = new Map();
     for (const row of models) {
+      const key = row.providerID || "modelle";
+      let group = groups.get(key);
+      if (!group) {
+        group = document.createElement("optgroup");
+        const name = String(row.providerName || row.providerID || "Modelle");
+        group.label = name.length > 30 ? name.slice(0, 29) + "…" : name;
+        groups.set(key, group);
+        select.appendChild(group);
+      }
       const option = document.createElement("option");
       option.value = row.value;
-      option.textContent = row.label || row.value;
-      select.appendChild(option);
+      const label = row.label || row.value;
+      const free = row.free && !/free|frei/i.test(label) ? " · kostenlos" : "";
+      option.textContent = label + free;
+      group.appendChild(option);
     }
     syncSelect("model", state.model || "");
   }

@@ -251,19 +251,50 @@ class OpenCodeClient:
         sessions.sort(key=updated, reverse=True)
         return sessions[:limit]
 
-    def list_models(self) -> List[Dict[str, str]]:
-        """Listet Modelle aktivierter Provider, die Werkzeuge unterstützen."""
+    def _config_entries(self) -> List[Dict[str, Any]]:
+        """Config-Einträge (Dokument + Verzeichnis) aus OpenCode."""
+        response = self._get("/api/config", timeout=(5.0, 15.0))
+        self._check(response)
+        entries = response.json()
+        if isinstance(entries, dict):
+            entries = entries.get("data", [])
+        return [entry for entry in entries if isinstance(entry, dict)]
+
+    def _config_providers(self) -> set:
+        """Provider, die in der OpenCode-Config explizit definiert sind."""
+        try:
+            entries = self._config_entries()
+        except Exception:  # noqa: BLE001 – Filter ist optional
+            return set()
+        providers = set()
+        for entry in entries:
+            info = entry.get("info")
+            if isinstance(info, dict) and isinstance(info.get("providers"), dict):
+                providers.update(str(key) for key in info["providers"])
+        return providers
+
+    def list_models(self) -> List[Dict[str, Any]]:
+        """Listet Modelle der konfigurierten bzw. verbundenen aktiven Provider."""
         providers_response = self._get("/api/provider", timeout=(5.0, 15.0))
         self._check(providers_response)
-        enabled = {
-            str(item.get("id"))
+        provider_rows = {
+            str(item.get("id")): item
             for item in providers_response.json().get("data", [])
-            if isinstance(item, dict) and item.get("activation") == "enabled"
+            if isinstance(item, dict) and item.get("id")
         }
+        enabled = {
+            provider_id
+            for provider_id, item in provider_rows.items()
+            if item.get("activation") == "enabled"
+        }
+        # OpenCode aktiviert eingebaute Provider (z. B. "opencode" Zen) von sich
+        # aus. Sichtbar bleiben Provider aus der eigenen Config und verbundene
+        # Integrationen; fremde, nur automatisch aktivierte Provider fallen raus.
+        configured = self._config_providers()
 
         models_response = self._get("/api/model", timeout=(5.0, 15.0))
         self._check(models_response)
-        models: List[Dict[str, str]] = []
+        models: List[Dict[str, Any]] = []
         for item in models_response.json().get("data", []):
             if not isinstance(item, dict):
                 continue
@@ -271,21 +302,41 @@ class OpenCodeClient:
             model_id = str(item.get("modelID") or item.get("id") or "")
             if provider not in enabled or not model_id:
                 continue
+            provider_info = provider_rows.get(provider) or {}
+            if (
+                configured
+                and provider not in configured
+                and not provider_info.get("integrationID")
+            ):
+                continue
             if not item.get("enabled", True):
                 continue
             capabilities = item.get("capabilities") or {}
             if capabilities.get("tools") is False:
                 continue
+            costs = [cost for cost in (item.get("cost") or []) if isinstance(cost, dict)]
+            free = False
+            if costs:
+                try:
+                    free = all(
+                        float(cost.get("input") or 0) == 0.0
+                        and float(cost.get("output") or 0) == 0.0
+                        for cost in costs
+                    )
+                except (TypeError, ValueError):
+                    free = False
             models.append(
                 {
                     "providerID": provider,
+                    "providerName": str(provider_info.get("name") or provider),
                     "modelID": model_id,
                     "name": str(item.get("name") or model_id),
                     "value": "{}/{}".format(provider, model_id),
+                    "free": free,
                 }
             )
 
-        models.sort(key=lambda entry: (entry["providerID"], entry["name"]))
+        models.sort(key=lambda entry: (entry["providerName"], entry["name"]))
         return models
 
     def set_model(self, session_id: str, model: str) -> bool:

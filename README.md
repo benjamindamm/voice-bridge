@@ -141,6 +141,11 @@ kollidieren. Umgebungsvariablen haben Vorrang vor `.env`;
 Die vollständige Liste mit Kommentaren steht in
 [.env.example](.env.example).
 
+Die Modellauswahl zeigt Modelle von Providern aus der OpenCode-Config
+(`~/.config/opencode/opencode.json` unter `providers`) sowie von verbundenen
+Integrationen (z. B. `opencode` Zen). Die Einträge sind nach Provider gruppiert;
+kostenlose Modelle sind markiert.
+
 ## MCP und Dokumente
 
 Das Cockpit listet alle MCP-Server mit Status. Ein Klick schaltet einen Server

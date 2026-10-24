@@ -468,7 +468,10 @@ class MenubarApp(rumps.App):
         self._pending_models = [
             {
                 "value": row["value"],
-                "label": "{} · {}".format(row["providerID"], row["name"]),
+                "label": row["name"],
+                "providerID": row["providerID"],
+                "providerName": row.get("providerName", row["providerID"]),
+                "free": bool(row.get("free")),
             }
             for row in models
         ]

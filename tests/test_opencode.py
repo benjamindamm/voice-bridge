@@ -392,8 +392,14 @@ class ModelTests(unittest.TestCase):
                     200,
                     {
                         "data": [
-                            {"id": "treno", "activation": "enabled"},
-                            {"id": "openrouter", "activation": "auto"},
+                            {"id": "treno", "name": "Treno", "activation": "enabled"},
+                            {"id": "openrouter", "name": "OpenRouter", "activation": "enabled"},
+                            {
+                                "id": "opencode",
+                                "name": "OpenCode",
+                                "activation": "enabled",
+                                "integrationID": "opencode",
+                            },
                         ]
                     },
                 ),
@@ -407,6 +413,7 @@ class ModelTests(unittest.TestCase):
                                 "name": "Local",
                                 "enabled": True,
                                 "capabilities": {"tools": True},
+                                "cost": [],
                             },
                             {
                                 "providerID": "treno",
@@ -414,6 +421,7 @@ class ModelTests(unittest.TestCase):
                                 "name": "Remote",
                                 "enabled": True,
                                 "capabilities": {"tools": True},
+                                "cost": [],
                             },
                             {
                                 "providerID": "openrouter",
@@ -421,6 +429,15 @@ class ModelTests(unittest.TestCase):
                                 "name": "X",
                                 "enabled": True,
                                 "capabilities": {"tools": True},
+                                "cost": [],
+                            },
+                            {
+                                "providerID": "opencode",
+                                "modelID": "beam-free",
+                                "name": "Beam Free",
+                                "enabled": True,
+                                "capabilities": {"tools": True},
+                                "cost": [{"input": 0, "output": 0}],
                             },
                             {
                                 "providerID": "treno",
@@ -428,9 +445,20 @@ class ModelTests(unittest.TestCase):
                                 "name": "Image",
                                 "enabled": True,
                                 "capabilities": {"tools": False},
+                                "cost": [],
                             },
                         ]
                     },
+                ),
+                ("GET", BASE + "/api/config"): FakeResponse(
+                    200,
+                    [
+                        {
+                            "type": "document",
+                            "path": "/x/opencode.json",
+                            "info": {"providers": {"treno": {}}},
+                        }
+                    ],
                 ),
             }
             client, _http, _cfg = build(tmp, routes)
@@ -438,8 +466,41 @@ class ModelTests(unittest.TestCase):
 
         self.assertEqual(
             [row["value"] for row in rows],
-            ["treno/local:default", "treno/remote:default"],
+            [
+                "opencode/beam-free",
+                "treno/local:default",
+                "treno/remote:default",
+            ],
         )
+        self.assertEqual(rows[0]["providerName"], "OpenCode")
+        self.assertTrue(rows[0]["free"])
+        self.assertFalse(rows[1]["free"])
+
+    def test_ohne_config_bleibt_der_katalog(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            routes = {
+                ("GET", BASE + "/api/provider"): FakeResponse(
+                    200, {"data": [{"id": "opencode", "activation": "enabled"}]}
+                ),
+                ("GET", BASE + "/api/model"): FakeResponse(
+                    200,
+                    {
+                        "data": [
+                            {
+                                "providerID": "opencode",
+                                "modelID": "beam-free",
+                                "name": "Beam Free",
+                                "enabled": True,
+                                "capabilities": {"tools": True},
+                            }
+                        ]
+                    },
+                ),
+            }
+            client, _http, _cfg = build(tmp, routes)
+            rows = client.list_models()
+
+        self.assertEqual([row["value"] for row in rows], ["opencode/beam-free"])
 
 
 class McpTests(unittest.TestCase):
